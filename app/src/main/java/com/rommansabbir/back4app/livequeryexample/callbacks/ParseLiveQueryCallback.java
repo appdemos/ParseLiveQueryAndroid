@@ -14,36 +14,53 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 
-public class ParseLiveQueryCallback extends AppCompatActivity {
+public class ParseLiveQueryCallback {
     private static final String ERROR_MESSAGE = "Retrieved Object Empty";
     private Context context;
-    private static String APP_NAME="YOUR_APP_NAME_HERE";
-    private static String CLASS_NAME = "YOUR_CLASS_NAME_HERE";
     private static final String TAG = "ParseLiveQueryCallback";
     private ParseLiveQueryInterface parseLiveQueryInterface;
+    private ParseLiveQueryClient parseLiveQueryClient;
 
-
-    //construct this class with context
+    /**
+     * Get parent context through constructor.
+     * @param context
+     */
     public ParseLiveQueryCallback(Context context) {
         this.context = context;
+        /**
+         * Instantiate interface
+         */
+        parseLiveQueryInterface = (ParseLiveQueryInterface) context;
+        /**
+         * Instantiate ParseLiveQueryClient = null
+         */
+        parseLiveQueryClient = null;
     }
 
-    public void getLiveQueryData(){
-        //instantiate interface
-        parseLiveQueryInterface = (ParseLiveQueryInterface) context;
-
-        ParseLiveQueryClient parseLiveQueryClient = null;
+    public void getLiveQueryData(String APP_NAME, String CLASS_NAME){
         try {
-            //instantiate parse live query client
+            /**
+             * Instantiate ParseLiveQueryClient with wss
+             * @param APP_NAME
+             */
             parseLiveQueryClient = ParseLiveQueryClient.Factory.getClient(new URI("wss://"+APP_NAME+".back4app.io/"));
 
-            //create a query and add condition if you want
+            /**
+             * Create a parse query with db class name
+             * Add some constraints if you want
+             * Just do as usual what you do in parse query
+             */
             ParseQuery<ParseObject> accidentListLiveQuery = new ParseQuery(CLASS_NAME);
 
-            //subscribe to the query
+
+            /**
+             * Simply subscribe to the query
+             */
             SubscriptionHandling<ParseObject> subscriptionHandling = parseLiveQueryClient.subscribe(accidentListLiveQuery);
 
-            //handle on CREATE subscription
+            /**
+             * Handle the subscription, if any new CREATE event occur
+             */
             subscriptionHandling.handleEvent(SubscriptionHandling.Event.CREATE, new SubscriptionHandling.HandleEventCallback<ParseObject>() {
                 @Override
                 public void onEvent(ParseQuery<ParseObject> query, final ParseObject object) {
@@ -51,11 +68,15 @@ public class ParseLiveQueryCallback extends AppCompatActivity {
                     handler.post(new Runnable() {
                         public void run() {
                             if(object != null){
-                                //TODO implement your logic here
+                                /**
+                                 * Notify interface if any data received from db
+                                 */
                                 parseLiveQueryInterface.onSuccess(object);
                             }
                             else {
-                                //TODO implement your logic here
+                                /**
+                                 * Notify interface if any error occur
+                                 */
                                 parseLiveQueryInterface.onFailure(ERROR_MESSAGE);
                             }
                         }
@@ -63,7 +84,9 @@ public class ParseLiveQueryCallback extends AppCompatActivity {
                 }
             });
 
-            //handle on UPDATE subscription
+            /**
+             * Handle the subscription, if any new UPDATE event occur
+             */
             subscriptionHandling.handleEvent(SubscriptionHandling.Event.UPDATE, new SubscriptionHandling.HandleEventCallback<ParseObject>() {
                 @Override
                 public void onEvent(ParseQuery<ParseObject> query, final ParseObject object) {
@@ -71,11 +94,15 @@ public class ParseLiveQueryCallback extends AppCompatActivity {
                     handler.post(new Runnable() {
                         public void run() {
                             if(object != null){
-                                //TODO implement your logic here
+                                /**
+                                 * Notify interface if any data received from db
+                                 */
                                 parseLiveQueryInterface.onSuccess(object);
                             }
                             else {
-                                //TODO implement your logic here
+                                /**
+                                 * Notify interface if any error occur
+                                 */
                                 parseLiveQueryInterface.onFailure(ERROR_MESSAGE);
                             }
                         }
@@ -83,14 +110,18 @@ public class ParseLiveQueryCallback extends AppCompatActivity {
                 }
             });
 
-            //handle on DELETE subscription
+            /**
+             * Handle the subscription, if any new DELETE event occur
+             */
             subscriptionHandling.handleEvent(SubscriptionHandling.Event.DELETE, new SubscriptionHandling.HandleEventCallback<ParseObject>() {
                 @Override
                 public void onEvent(ParseQuery<ParseObject> query, final ParseObject object) {
                     Handler handler = new Handler(Looper.getMainLooper());
                     handler.post(new Runnable() {
                         public void run() {
-                            //TODO implement your logic here
+                            /**
+                             * Notify interface if any data deleted from db
+                             */
                             parseLiveQueryInterface.onSuccess(object);
                         }
 
@@ -99,7 +130,9 @@ public class ParseLiveQueryCallback extends AppCompatActivity {
             });
 
         }
-        //catch any exception if occurs
+        /**
+         * Catch if any exception occur.
+         */
         catch (URISyntaxException e) {
             e.printStackTrace();
             parseLiveQueryInterface.onFailure(e.getMessage());

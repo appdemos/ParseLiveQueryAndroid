@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements ParseLiveQueryCal
         ParseLiveQueryCallback parseLiveQueryCallback = new ParseLiveQueryCallback(this);
 
         //call getLiveQueryData() from callback to activate liveQuery
-        parseLiveQueryCallback.getLiveQueryData();
+        parseLiveQueryCallback.getLiveQueryData("swurvintest", "Accident");
 
     }
 
