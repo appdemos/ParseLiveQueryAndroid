@@ -38,6 +38,10 @@ ParseQuery<ParseObject> liveQuery = ParseQuery.getQuery("CLASS_NAME_HERE");
 
 parseLiveQueryListener.addLiveEventListener("APP_NAME", liveQuery);
 
+5. Destroy the callback after it usages
+
+parseLiveQueryListener.destroyCallback();
+
 
 
 # Library Implementation
